@@ -3,7 +3,7 @@ import os
 
 class FastNoiseLiteConan(ConanFile):
     name = "fastnoise-lite"
-    version = "2021.11.29"
+    version = "1.0.3.2111"
     license = "MIT"
     url = "https://github.com/triadastudio/conan-fastnoise-lite.git"
     homepage = "https://github.com/Auburn/FastNoiseLite"
