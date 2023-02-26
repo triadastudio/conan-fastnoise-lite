@@ -20,9 +20,11 @@ jobs:
         CONAN_LOGIN_USERNAME: ${{ secrets.JFROG_USER }}
         CONAN_PASSWORD: ${{ secrets.JFROG_APIKEY }}
       run: |
+        conan profile detect
         conan remote add triada https://triada.jfrog.io/artifactory/api/conan/conan
-        conan user -r triada -p --skip-auth
+        conan remote login triada ${CONAN_LOGIN_USERNAME}
+
     - name: Build
       run: conan create .
     - name: Upload
-      run: conan upload "fastnoise-lite" -r triada --all -c
+      run: conan upload "fastnoise-lite" -r triada -c
