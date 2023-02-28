@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.files import get, copy
+from conan.tools import files
 
 import os
 
@@ -19,14 +19,14 @@ class FastNoiseLiteConan(ConanFile):
         return "6be3d6bf7fb408de341285f9ee8a29b67fd953f1"
 
     def source(self):
-        get(self,
-            url="https://github.com/Auburn/FastNoiseLite/archive/{}.zip".format(self._source_commit),
-            pattern="*/Cpp/*",
-            strip_root=True)
+        files.get(self,
+                  url="https://github.com/Auburn/FastNoiseLite/archive/{}.zip".format(self._source_commit),
+                  pattern="*/Cpp/*",
+                  strip_root=True)
 
     def package(self):
-        copy(self,
-             pattern="*.h",
-             src=self.source_folder,
-             dst=os.path.join(self.package_folder, "include"),
-             keep_path=False)
+        files.copy(self,
+                   pattern="*.h",
+                   src=self.source_folder,
+                   dst=os.path.join(self.package_folder, "include"),
+                   keep_path=False)
