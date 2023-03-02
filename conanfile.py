@@ -24,9 +24,16 @@ class FastNoiseLiteConan(ConanFile):
                   pattern="*/Cpp/*",
                   strip_root=True)
 
+    def package_id(self):
+        self.info.clear()
+
     def package(self):
         files.copy(self,
                    pattern="*.h",
                    src=self.source_folder,
                    dst=os.path.join(self.package_folder, "include"),
                    keep_path=False)
+
+    def package_info(self):
+        self.cpp_info.bindirs = []
+        self.cpp_info.libdirs = []
