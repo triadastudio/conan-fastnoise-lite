@@ -7,23 +7,99 @@ on:
     branches: [ master ]
 
 jobs:
-   linux:
-    runs-on: ubuntu-latest
+  windows:
+    runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+    - uses: actions/checkout@v5
       with:
         submodules: 'recursive'
     - name: Install dependencies
-      run: sudo pip install conan
+      run: |
+        python3 -m venv .venv
+        ./.venv/Scripts/activate
+        python3 -m pip install conan
+    - name: Build
+      run: |
+        ./.venv/Scripts/activate
+        conan create . -pr:h profiles/windows.profile -pr:b profiles/windows.profile -b missing -s build_type=Release
+
+  macos:
+    runs-on: macos-15-intel
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+    - name: Install dependencies
+      run: |
+        python3 -m venv .venv
+        . .venv/bin/activate
+        python3 -m pip install conan
+    - name: Build
+      run: |
+        . .venv/bin/activate
+        conan create . -pr:h profiles/macos.profile -pr:b profiles/macos.profile -b missing -s build_type=Release
+
+  macos-armv8:
+    runs-on: macos-15
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+    - name: Install dependencies
+      run: |
+        python3 -m venv .
+        source ./bin/activate
+        python3 -m pip install conan
+    - name: Build
+      run: |
+        source ./bin/activate
+        conan create . -pr:h profiles/macos-armv8.profile -pr:b profiles/macos-armv8.profile -b missing -s build_type=Release
+
+  ios:
+    runs-on: macos-15
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+    - name: Install dependencies
+      run: |
+        python3 -m venv .venv
+        . .venv/bin/activate
+        python3 -m pip install conan
+    - name: Build
+      run: |
+        . .venv/bin/activate
+        conan create . -pr:h profiles/ios.profile -pr:b profiles/macos-armv8.profile -b missing -s build_type=Release
+
+  # Upload once, all platform produce identical package
+  linux:
+    runs-on: ubuntu-24.04
+    needs: [ windows, macos, macos-armv8, ios ]
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+    - name: Install dependencies
+      run: |
+        python3 -m venv .venv
+        . .venv/bin/activate
+        python3 -m pip install conan
     - name: Config
       env:
         CONAN_PASSWORD: ${{ secrets.ARTIFACTORY_APIKEY }}
       run: |
-        conan profile detect
+        . .venv/bin/activate
         conan remote add triada ${{ secrets.ARTIFACTORY_URL }}
         conan remote login triada ${{ secrets.ARTIFACTORY_USER }}
-
     - name: Build
-      run: conan create .
+      run: |
+        . .venv/bin/activate
+        conan create . -pr:h profiles/linux.profile -pr:b profiles/linux.profile -b missing -s build_type=Release
     - name: Upload
-      run: conan upload "fastnoise-lite" -r triada -c
+      run: |
+        . .venv/bin/activate
+        conan upload "fastnoise-lite" -r triada -c

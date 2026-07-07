@@ -5,7 +5,7 @@ import os
 
 class FastNoiseLiteConan(ConanFile):
     name = "fastnoise-lite"
-    version = "1.0.3.2111"
+    version = "1.1.1"
     license = "MIT"
     url = "https://github.com/triadastudio/conan-fastnoise-lite.git"
     homepage = "https://github.com/Auburn/FastNoiseLite"
@@ -16,7 +16,7 @@ class FastNoiseLiteConan(ConanFile):
 
     @property
     def _source_commit(self):
-        return "6be3d6bf7fb408de341285f9ee8a29b67fd953f1"
+        return "7ccfbc16eb1c932568f177d63a9ba51d89bbe516"
 
     def source(self):
         files.get(self,
